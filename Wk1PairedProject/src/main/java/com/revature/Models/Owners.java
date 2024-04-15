@@ -17,10 +17,10 @@ public class Owners {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ownerID;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String ownerName;
 
-    @Column(nullable = false)
+    @Column
     private int ownerAge;
 
 

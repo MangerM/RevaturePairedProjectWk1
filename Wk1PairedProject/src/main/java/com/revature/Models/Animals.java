@@ -26,7 +26,7 @@ public class Animals {
     private String animalStatus;
 
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name="ownerID")
     private Owners animalOwner;
 
@@ -37,6 +37,13 @@ public class Animals {
     public Animals() {
     }
 
+    //Since not all animals have an owner we need to be able to create an animal without an owner.
+    public Animals(int animalID, String animalName, String animalType, String animalStatus) {
+        this.animalID = animalID;
+        this.animalName = animalName;
+        this.animalType = animalType;
+        this.animalStatus = animalStatus;
+    }
 
     public Animals(int animalID, String animalName, String animalType, String animalStatus, Owners animalOwner) {
         this.animalID = animalID;

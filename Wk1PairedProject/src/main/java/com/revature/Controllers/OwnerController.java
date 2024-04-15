@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping(value="/owners")
 @ResponseBody
@@ -23,10 +26,26 @@ public class OwnerController {
     public ResponseEntity<Owners> insertUser(@RequestBody Owners Owner){
         Owners u = ownerDAO.save(Owner);
 
-        if (u == null){
-            return ResponseEntity.internalServerError().build();
+        return ResponseEntity.status(201).body(u);
+
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Owners>> getAllOwners(){
+
+        List<Owners> owners = ownerDAO.findAll();
+
+        return ResponseEntity.ok(owners);
+    }
+
+    @GetMapping("/{ownerID}")
+    public ResponseEntity<Object> getOwnerByID(@PathVariable int ownerID){
+        Optional<Owners> o = ownerDAO.findById(ownerID);
+
+        if(o.isEmpty()){
+            return ResponseEntity.status(404).body("No owner found with ID " + ownerID);
         }else{
-            return ResponseEntity.status(201).body(u);
+            return ResponseEntity.ok(o);
         }
     }
 
