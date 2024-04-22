@@ -93,4 +93,15 @@ public class AnimalController {
         return ResponseEntity.ok(resultAnimals);
     }
 
+    @DeleteMapping("/{animalID}")
+    public ResponseEntity<Object> deleteAnimalByID(@PathVariable int animalID){
+        Optional<Animals> animal = animalDAO.findById(animalID);
+        if(animal.isEmpty()){
+            return ResponseEntity.status(404).body("No Animal found with the Id Provided "+ animalID);
+        }
+        Animals a = animal.get();
+        animalDAO.delete(a);
+        return ResponseEntity.accepted().body("Animal with the ID " + a.getAnimalID() +" has been deleted");
+    }
+
 }
