@@ -49,4 +49,26 @@ public class OwnerController {
         }
     }
 
+
+    /*
+    *
+    * This is the update owner(user) code
+    *
+    * */
+    @PatchMapping("/{ownerId}")
+    public ResponseEntity<Object> patchOwner(@RequestBody int age, @PathVariable int ownerId){
+
+        Optional<Owners> o = ownerDAO.findById(ownerId);
+
+        if(o.isEmpty()){
+            return ResponseEntity.status(404).body("No Owner found with ID " + ownerId);
+        }else{
+            Owners owner = o.get();
+            owner.setOwnerAge(age);
+            ownerDAO.save(owner);
+            return ResponseEntity.accepted().body(owner);
+        }
+
+    }
+
 }

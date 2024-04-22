@@ -104,4 +104,56 @@ public class AnimalController {
         return ResponseEntity.accepted().body("Animal with the ID " + a.getAnimalID() +" has been deleted");
     }
 
+    /*
+    *
+    * This is where we have code that "adopts" the animal
+    *
+    * */
+    @PatchMapping("/adopt/{animalID}")
+    public ResponseEntity<Object> adoptAnimalByID(@PathVariable int animalID, @RequestBody int ownerID){
+        Optional<Animals> animal = animalDAO.findById(animalID);
+        Optional<Owners> owner = ownerDAO.findById(ownerID);
+        if(animal.isEmpty()){
+            return ResponseEntity.status(404).body("No Animal found with the Id Provided "+ animalID);
+        }
+        if(owner.isEmpty()){
+            return ResponseEntity.status(404).body("No Owner found with the Id Provided "+ ownerID);
+        }
+        Animals a = animal.get();
+        Owners o = owner.get();
+        if(a.getAnimalStatus().equals("Ready for Adoption")){
+            a.setAnimalOwner(o);
+            a.setAnimalStatus("Adopted");
+            animalDAO.save(a);
+            return ResponseEntity.ok("Animal " + a.getAnimalName() + " ID " + a.getAnimalID() + " has been adopted by " + o.getOwnerName());
+        }else{
+            return ResponseEntity.status(404).body("Animal " + a.getAnimalName() + " ID" + animalID + " Is not ready for adoption.");
+        }
+    }
+
+    /*
+
+    Here is where we can update an animal's contents
+
+     */
+    @PatchMapping("/{animalID}")
+    public ResponseEntity<Object> updateAnimal(@PathVariable int animalID, @RequestBody Animals animal){
+        Optional<Animals> animalExist = animalDAO.findById(animalID);
+        if(animalExist.isEmpty()) {
+            return ResponseEntity.status(404).body("No Animal found with the Id Provided " + animalID);
+        }
+        Animals a = animalExist.get();
+
+        if(a.getAnimalOwner() == null && animal.getAnimalOwner() != null){
+            return ResponseEntity.status(404).body("If you intend to adopt animal ID " + animalID + " Name " + a.getAnimalName() + " Please use /adopt/" + animalID);
+        }
+
+        a.setAnimalStatus(animal.getAnimalStatus());
+        a.setAnimalOwner(animal.getAnimalOwner());
+        a.setAnimalName(animal.getAnimalName());
+        a.setAnimalType(animal.getAnimalType());
+        animal.setAnimalID(a.getAnimalID());
+        animalDAO.save(a);
+        return ResponseEntity.status(201).body(animal);
+    }
 }
